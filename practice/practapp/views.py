@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from datetime import datetime
-from faker import Faker
-from practapp.models import User
+
+# from practapp.models import User
+from .forms import NewUserForm
 
 def my_view(request):
     # Get the current date
@@ -18,10 +19,16 @@ def my_view(request):
 
 def user_page(request):
     
-    # user = User.objects.create(first_name=first_name, last_name=last_name, email=email)
-    # context = {
-    #     'user': user
-    # }
-    user_list = User.objects.order_by("first_name")
-    user_dict = {'user_page': user_list}
-    return render(request, 'practapp/user.html', context=user_dict)
+    
+    # user_list = User.objects.order_by("first_name")
+    # user_dict = {'user_page': user_list}
+    # return render(request, 'practapp/user.html', context=user_dict)
+    form=NewUserForm()
+    if request.method=='POST':
+        form=NewUserForm(request.POST)
+        if form.is_valid():
+            form.save(commit=True)
+            return my_view(request)
+        else:
+            print("ERROR FORM INVALID")
+    return render(request, 'practapp/user.html', {'form': form})        
